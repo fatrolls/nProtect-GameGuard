@@ -230,7 +230,7 @@ char __thiscall CFileAuthClient::Auth(HCRYPTPROV *phProv, LPCSTR lpFileNameToRea
     return 0;
   }
   qmemcpy(v15, (const void *)(phProv[14] + phProv[1] + phProv[2]), phProv[6]);
-  if ( !*phProv && !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, 0xF0000000) )
+  if ( !*phProv && !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, CRYPT_VERIFYCONTEXT) )
   {
     phProv[17] = 8;
     return 0;
@@ -246,7 +246,7 @@ char __thiscall CFileAuthClient::Auth(HCRYPTPROV *phProv, LPCSTR lpFileNameToRea
   {
     if ( GetLastError() != 87 )
       goto LABEL_37;
-    if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, 0xF0000000) )
+    if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, CRYPT_VERIFYCONTEXT) )
     {
       phProv[17] = 98;
       return 0;
