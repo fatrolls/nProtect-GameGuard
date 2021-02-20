@@ -283,7 +283,7 @@ LABEL_37:
     CryptDestroyHash(phProv[3]);
     *v18 = 0;
   }
-  if ( !CryptCreateHash(*phProv, 0x8003u, 0, 0, phProv + 3) )
+  if ( !CryptCreateHash(*phProv, CALG_MD5, 0, 0, phProv + 3) )
   {
     phProv[17] = 10;
     return 0;
@@ -604,7 +604,7 @@ char __thiscall CFileAuthClient::DecryptMem(CFileAuthClient *this, LPCSTR lpFile
     CryptDestroyHash(*((_DWORD *)this + 16));
     *v16 = 0;
   }
-  if ( !CryptCreateHash(*(_DWORD *)this, 0x8003u, 0, 0, (HCRYPTHASH *)this + 16) )
+  if ( !CryptCreateHash(*(_DWORD *)this, CALG_MD5, 0, 0, (HCRYPTHASH *)this + 16) )
   {
     *((_DWORD *)this + 17) = 5;
     return 0;
