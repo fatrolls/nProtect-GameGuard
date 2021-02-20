@@ -629,7 +629,7 @@ BOOL CFileAuthClient::DecryptMem(LPCSTR lpFileName, char* dstArray, unsigned int
     char* v20; // edx
     DWORD NumberOfBytesRead; // [esp+10h] [ebp-4h] BYREF
 
-    v6 = CreateFile(lpFileName, 0x80000000, 3u, 0, 3u, 0x80u, 0);
+    v6 = CreateFile(lpFileName, GENERIC_READ, 3u, 0, 3u, 0x80u, 0);
     v7 = v6;
     if (v6 == (HANDLE)-1)
     {
@@ -1221,6 +1221,117 @@ BOOL CFileAuthClient::DecryptRC4(unsigned __int8* buf, unsigned int size)
 // nfuncs=31 queued=8 decompiled=8 lumina nreq=0 worse=0 better=0
 // ALL OK, 8 function(s) have been successfully decompiled
 
+uchar* DecryptXOR(BYTE* szString, int StartPos, int iLen)
+{
+    //Every encrypted string starts with "01" byte
+    //The key is actually a bit longer then the string (5 bytes)
+    //String ends on byte "00" as normal strings also do
+    if (!szString || szString[StartPos] != 1 || iLen < 5)
+        return NULL;
+
+    //Changes 2 bytes for more "security" lol
+    DWORD dwKey = szString[StartPos+1];
+    dwKey = dwKey + dwKey * 2;
+    szString[StartPos+2] ^= (BYTE)dwKey + 0x65; //Byte 3
+
+    dwKey = dwKey + dwKey * 2 + 3;
+    szString[StartPos+3] ^= (BYTE)dwKey + 0x65; //Byte 4
+
+    //Main decryption routine
+    int i;
+    for (i = 0; i < iLen - 5; i++)
+    {
+        dwKey++;
+
+        dwKey = dwKey + dwKey * 2;
+        BYTE bDL = dwKey;
+        bDL += 0x65;
+        szString[StartPos+i] = (bDL ^ (szString[StartPos + i + 4]));
+    }
+
+    //Overwrite the end with a string terminator (the key, no actual part of the string)
+    //String size + 5
+    for (int j = 0; j < 5; j++)
+        szString[StartPos + i + j] = '\0';
+
+    return (uchar*)szString;
+}
+
+void DecryptERLFiles(LPCSTR lpFilename, LPCSTR outputFilename) {
+    HANDLE OpenHandle;
+    HANDLE WriteHandle;
+    DWORD fileSize;
+    DWORD NumberOfBytesRead;
+    uchar* buffer;
+    OpenHandle = CreateFile(lpFilename, GENERIC_READ, 3u, 0, 3u, 0x80u, 0);
+
+    if (OpenHandle == (HANDLE)-1)
+    {
+        printf("fail open file\n");
+        return;
+    }
+    fileSize = GetFileSize(OpenHandle, 0);
+
+    if (fileSize == -1)
+    {
+        CloseHandle(OpenHandle);
+        printf("fail open filesize\n");
+        return;
+    }
+
+    buffer = (uchar*)malloc(fileSize);
+
+    if (!buffer)
+    {
+        CloseHandle(OpenHandle);
+        printf("fail allocate buffer\n");
+        return;
+    }
+
+    ReadFile(OpenHandle, buffer, fileSize, &NumberOfBytesRead, 0);
+
+    if (NumberOfBytesRead != fileSize)
+    {
+        CloseHandle(OpenHandle);
+        printf("fail read size not same %d=%d\n", NumberOfBytesRead, fileSize);
+        return;
+    }
+
+    int StartPos = -1;
+    int TrimSize = -1;
+    for (int i = 0; i < fileSize; i++) {
+        if (StartPos == -1 && buffer[i] == 1)
+            StartPos = i;
+        else if (StartPos != -1 && buffer[i] == 1)
+            TrimSize = i - StartPos;
+        if (StartPos != -1 && TrimSize != -1) {
+            buffer = (uchar*)DecryptXOR(buffer, StartPos, TrimSize);
+            StartPos = -1;
+            TrimSize = -1;
+        }
+    }
+
+    WriteHandle = CreateFile(outputFilename, GENERIC_WRITE, 3u, 0, 2u, 0x80u, 0);
+    if (WriteHandle == (HANDLE)-1)
+    {
+        printf("cannot write file\n");
+        return;
+    }
+    else
+    {
+        WriteFile(WriteHandle, buffer, fileSize, (LPDWORD)&fileSize, 0);
+        SetEndOfFile(WriteHandle);
+        FlushFileBuffers(WriteHandle);
+        CloseHandle(WriteHandle);
+        if (buffer)
+        {
+            free(buffer);
+            buffer = 0;
+        }
+        printf("finish good\n");
+        return;
+    }
+}
 
 int main()
 {
@@ -1229,8 +1340,33 @@ int main()
     test->Auth("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini", 1);
     test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini.dump.txt", (BYTE*)"ectGameMon");
 
+    /*
+    Keys dd \xC5\xF1\xF4\x35
+            \x83\xA3\xA0\x23
+            \x4E\x62\x6C\x2E
+            \x89\x81\x88\x09
+            \xCA\xF2\xF8\x3A
+            \xD2\xD4\x16\xC6
+            \x9C\x1D\x8D\x91
+            \x64\x26\x46\x62
+            \x39\x49\x71\x78
+            \x1A\x0A\x12\x18
+    */
+
+    DecryptERLFiles("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\output.test.txt");
 
     test->Auth("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", 1);
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.dump.txt", (BYTE*)"ectGameMon");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.1.dump.txt", (BYTE*)"\xC5\xF1\xF4\x35");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.2.dump.txt", (BYTE*)"\x83\xA3\xA0\x23");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.3.dump.txt", (BYTE*)"\x4E\x62\x6C\x2E");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.4.dump.txt", (BYTE*)"\x89\x81\x88\x09");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.5.dump.txt", (BYTE*)"\xCA\xF2\xF8\x3A");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.6.dump.txt", (BYTE*)"\xD2\xD4\x16\xC6");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.7.dump.txt", (BYTE*)"\x9C\x1D\x8D\x91");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.8.dump.txt", (BYTE*)"\x64\x26\x46\x62");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.9.dump.txt", (BYTE*)"\x39\x49\x71\x78");
+    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.10.dump.txt", (BYTE*)"\x1A\x0A\x12\x18");
+
+    
     std::cout << "Hello World!\n";
 }
