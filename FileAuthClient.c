@@ -67,9 +67,93 @@ char __thiscall CFileAuthClient::DecryptRC4(CFileAuthClient *this, unsigned __in
 //-------------------------------------------------------------------------
 // Data declarations
 
-BYTE pbPubKey = 6u; // idb
-_UNKNOWN unk_1; // weak
-_UNKNOWN unk_40; // weak
+BYTE pbPubKey[84] =
+{
+  6u,
+  2u,
+  0u,
+  0u,
+  0u,
+  36u,
+  0u,
+  0u,
+  82u,
+  83u,
+  65u,
+  49u,
+  0u,
+  2u,
+  0u,
+  0u,
+  1u,
+  0u,
+  1u,
+  0u,
+  251u,
+  227u,
+  252u,
+  9u,
+  175u,
+  174u,
+  101u,
+  140u,
+  150u,
+  76u,
+  197u,
+  55u,
+  210u,
+  164u,
+  119u,
+  231u,
+  76u,
+  65u,
+  194u,
+  207u,
+  242u,
+  254u,
+  45u,
+  156u,
+  128u,
+  148u,
+  12u,
+  136u,
+  109u,
+  179u,
+  132u,
+  159u,
+  140u,
+  34u,
+  160u,
+  201u,
+  205u,
+  192u,
+  171u,
+  48u,
+  101u,
+  130u,
+  66u,
+  60u,
+  238u,
+  60u,
+  168u,
+  183u,
+  17u,
+  214u,
+  34u,
+  250u,
+  251u,
+  35u,
+  247u,
+  114u,
+  205u,
+  231u,
+  208u,
+  111u,
+  106u,
+  142u,
+  150u,
+  227u
+};
 DWORD dwPubKeyLen = 84u; // idb
 
 
@@ -659,12 +743,12 @@ LABEL_35:
 }
 
 //----- (00000B74) --------------------------------------------------------
-void __cdecl RC4_set_key(struct rc4_key_st *a1, int a2, unsigned __int8 *a3)
+void __cdecl RC4_set_key(struct rc4_key_st *key, int pdwDataLen, unsigned __int8 *pbData)
 {
   char *v3; // esi
   char v4; // di
   unsigned int v5; // eax
-  DWORD *v6; // ecx
+  _DWORD *v6; // ecx
   int v7; // eax
   int *v8; // ecx
   int v9; // edx
@@ -678,59 +762,59 @@ void __cdecl RC4_set_key(struct rc4_key_st *a1, int a2, unsigned __int8 *a3)
   int v17; // eax
   int v18; // edx
   int v19; // ebx
-  struct rc4_key_st *v20; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *keya; // [esp+14h] [ebp+4h]
 
-  v3 = (char *)a1 + 8;
+  v3 = (char *)key + 8;
   v4 = 0;
   v5 = 0;
-  v6 = (DWORD *)((char *)a1 + 8);
+  v6 = (_DWORD *)((char *)key + 8);
   do
     *v6++ = v5++;
   while ( v5 < 0x100 );
-  *(DWORD *)a1 = 0;
-  *((DWORD *)a1 + 1) = 0;
+  *(_DWORD *)key = 0;
+  *((_DWORD *)key + 1) = 0;
   v7 = 0;
-  v8 = (int *)((char *)a1 + 16);
-  v20 = (struct rc4_key_st *)&unk_40;
+  v8 = (int *)((char *)key + 16);
+  keya = (struct rc4_key_st *)(&pbPubKey + 64);
   do
   {
     v9 = *(v8 - 2);
-    v10 = (unsigned __int8)(v4 + v9 + a3[v7]);
+    v10 = (unsigned __int8)(v4 + v9 + pbData[v7]);
     v11 = v7 + 1;
-    if ( v11 == a2 )
+    if ( v11 == pdwDataLen )
       v11 = 0;
-    *(v8 - 2) = *(DWORD *)&v3[4 * v10];
-    *(DWORD *)&v3[4 * v10] = v9;
+    *(v8 - 2) = *(_DWORD *)&v3[4 * v10];
+    *(_DWORD *)&v3[4 * v10] = v9;
     v12 = *(v8 - 1);
-    v13 = (unsigned __int8)(v10 + v12 + a3[v11]);
+    v13 = (unsigned __int8)(v10 + v12 + pbData[v11]);
     v14 = v11 + 1;
-    if ( v14 == a2 )
+    if ( v14 == pdwDataLen )
       v14 = 0;
-    *(v8 - 1) = *(DWORD *)&v3[4 * v13];
-    *(DWORD *)&v3[4 * v13] = v12;
+    *(v8 - 1) = *(_DWORD *)&v3[4 * v13];
+    *(_DWORD *)&v3[4 * v13] = v12;
     v15 = *v8;
-    v16 = (unsigned __int8)(v13 + *v8 + a3[v14]);
+    v16 = (unsigned __int8)(v13 + *v8 + pbData[v14]);
     v17 = v14 + 1;
-    if ( v17 == a2 )
+    if ( v17 == pdwDataLen )
       v17 = 0;
-    *v8 = *(DWORD *)&v3[4 * v16];
-    *(DWORD *)&v3[4 * v16] = v15;
+    *v8 = *(_DWORD *)&v3[4 * v16];
+    *(_DWORD *)&v3[4 * v16] = v15;
     v18 = v8[1];
-    v19 = (unsigned __int8)(v16 + v18 + a3[v17]);
+    v19 = (unsigned __int8)(v16 + v18 + pbData[v17]);
     v7 = v17 + 1;
     v4 = v19;
-    if ( v7 == a2 )
+    if ( v7 == pdwDataLen )
       v7 = 0;
-    v8[1] = *(DWORD *)&v3[4 * v19];
-    *(DWORD *)&v3[4 * v19] = v18;
+    v8[1] = *(_DWORD *)&v3[4 * v19];
+    *(_DWORD *)&v3[4 * v19] = v18;
     v8 += 4;
-    v20 = (struct rc4_key_st *)((char *)v20 - 1);
+    keya = (struct rc4_key_st *)((char *)keya - 1);
   }
-  while ( v20 );
+  while ( keya );
 }
 
 //----- (00000C64) --------------------------------------------------------
-void __cdecl RC4(struct rc4_key_st *a1, unsigned int a2, unsigned __int8 *a3, unsigned __int8 *a4)
+void __cdecl RC4(struct rc4_key_st *rc4_key, unsigned int size, unsigned __int8 *buf, unsigned __int8 *buf_)
 {
   char v4; // dl
   int v6; // ebp
@@ -771,8 +855,8 @@ void __cdecl RC4(struct rc4_key_st *a1, unsigned int a2, unsigned __int8 *a3, un
   int v41; // edx
   int v42; // ebp
   int v43; // ebx
-  BYTE *v44; // ecx
-  BYTE *v45; // esi
+  _BYTE *v44; // ecx
+  _BYTE *v45; // esi
   int v46; // edi
   int v47; // edx
   int v48; // ebp
@@ -801,284 +885,286 @@ void __cdecl RC4(struct rc4_key_st *a1, unsigned int a2, unsigned __int8 *a3, un
   int v71; // ebx
   int v72; // edx
   int v73; // ebx
-  BYTE *v74; // ecx
-  BYTE *v75; // esi
+  _BYTE *v74; // ecx
+  _BYTE *v75; // esi
   int v76; // edx
   int v77; // ebx
-  BYTE *v78; // ecx
-  BYTE *v79; // esi
+  _BYTE *v78; // ecx
+  _BYTE *v79; // esi
   int v80; // edx
   int v81; // ebx
-  BYTE *v82; // ecx
-  BYTE *v83; // esi
+  _BYTE *v82; // ecx
+  _BYTE *v83; // esi
   int v84; // edx
   int v85; // ebx
-  BYTE *v86; // ecx
-  BYTE *v87; // esi
+  _BYTE *v86; // ecx
+  _BYTE *v87; // esi
   int v88; // edx
   int v89; // ebx
-  BYTE *v90; // ecx
-  BYTE *v91; // esi
+  _BYTE *v90; // ecx
+  _BYTE *v91; // esi
   int v92; // edx
   int v93; // ebx
-  BYTE *v94; // ecx
-  BYTE *v95; // esi
+  _BYTE *v94; // ecx
+  _BYTE *v95; // esi
   int v96; // edx
   int v97; // ebx
-  BYTE *v98; // ecx
-  BYTE *v99; // esi
+  _BYTE *v98; // ecx
+  _BYTE *v99; // esi
   int v100; // edx
   int v101; // ebx
-  struct rc4_key_st *v102; // [esp+14h] [ebp+4h]
-  struct rc4_key_st *v103; // [esp+14h] [ebp+4h]
-  struct rc4_key_st *i; // [esp+14h] [ebp+4h]
-  struct rc4_key_st *v105; // [esp+14h] [ebp+4h]
-  struct rc4_key_st *v106; // [esp+14h] [ebp+4h]
-  struct rc4_key_st *v107; // [esp+14h] [ebp+4h]
-  struct rc4_key_st *v108; // [esp+14h] [ebp+4h]
-  struct rc4_key_st *v109; // [esp+14h] [ebp+4h]
-  struct rc4_key_st *v110; // [esp+14h] [ebp+4h]
-  unsigned __int8 *v111; // [esp+20h] [ebp+10h]
+  struct rc4_key_st *rc4_keya; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *rc4_keyb; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *rc4_keyc; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *rc4_keyd; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *rc4_keye; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *rc4_keyf; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *rc4_keyg; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *rc4_keyh; // [esp+14h] [ebp+4h]
+  struct rc4_key_st *rc4_keyi; // [esp+14h] [ebp+4h]
+  unsigned __int8 *buf_a; // [esp+20h] [ebp+10h]
 
-  v4 = a2;
-  v6 = *((DWORD *)a1 + 1);
-  v7 = *(DWORD *)a1;
-  v102 = (struct rc4_key_st *)(a2 >> 3);
-  if ( a2 >> 3 )
+  v4 = size;
+  v6 = *((_DWORD *)rc4_key + 1);
+  v7 = *(_DWORD *)rc4_key;
+  rc4_keya = (struct rc4_key_st *)(size >> 3);
+  if ( size >> 3 )
   {
     v8 = (unsigned __int8)(v7 + 1);
-    v9 = *((DWORD *)a1 + v8 + 2);
+    v9 = *((_DWORD *)rc4_key + v8 + 2);
     v10 = (unsigned __int8)(v9 + v6);
-    v11 = *((DWORD *)a1 + v10 + 2);
-    *((DWORD *)a1 + v8 + 2) = v11;
-    *((DWORD *)a1 + v10 + 2) = v9;
-    *a4 = *a3 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v9 + v11) + 8);
+    v11 = *((_DWORD *)rc4_key + v10 + 2);
+    *((_DWORD *)rc4_key + v8 + 2) = v11;
+    *((_DWORD *)rc4_key + v10 + 2) = v9;
+    *buf_ = *buf ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v9 + v11) + 8);
     v12 = (unsigned __int8)(v8 + 1);
-    v13 = *((DWORD *)a1 + v12 + 2);
+    v13 = *((_DWORD *)rc4_key + v12 + 2);
     v14 = (unsigned __int8)(v13 + v10);
-    v15 = *((DWORD *)a1 + v14 + 2);
-    *((DWORD *)a1 + v12 + 2) = v15;
-    *((DWORD *)a1 + v14 + 2) = v13;
-    a4[1] = a3[1] ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v13 + v15) + 8);
+    v15 = *((_DWORD *)rc4_key + v14 + 2);
+    *((_DWORD *)rc4_key + v12 + 2) = v15;
+    *((_DWORD *)rc4_key + v14 + 2) = v13;
+    buf_[1] = buf[1] ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v13 + v15) + 8);
     v16 = (unsigned __int8)(v12 + 1);
-    v17 = *((DWORD *)a1 + v16 + 2);
+    v17 = *((_DWORD *)rc4_key + v16 + 2);
     v18 = (unsigned __int8)(v17 + v14);
-    v19 = *((DWORD *)a1 + v18 + 2);
-    *((DWORD *)a1 + v16 + 2) = v19;
-    *((DWORD *)a1 + v18 + 2) = v17;
-    a4[2] = a3[2] ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v17 + v19) + 8);
+    v19 = *((_DWORD *)rc4_key + v18 + 2);
+    *((_DWORD *)rc4_key + v16 + 2) = v19;
+    *((_DWORD *)rc4_key + v18 + 2) = v17;
+    buf_[2] = buf[2] ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v17 + v19) + 8);
     v20 = (unsigned __int8)(v16 + 1);
-    v21 = *((DWORD *)a1 + v20 + 2);
+    v21 = *((_DWORD *)rc4_key + v20 + 2);
     v22 = (unsigned __int8)(v21 + v18);
-    v23 = *((DWORD *)a1 + v22 + 2);
-    *((DWORD *)a1 + v20 + 2) = v23;
-    *((DWORD *)a1 + v22 + 2) = v21;
-    a4[3] = a3[3] ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v21 + v23) + 8);
+    v23 = *((_DWORD *)rc4_key + v22 + 2);
+    *((_DWORD *)rc4_key + v20 + 2) = v23;
+    *((_DWORD *)rc4_key + v22 + 2) = v21;
+    buf_[3] = buf[3] ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v21 + v23) + 8);
     v24 = (unsigned __int8)(v20 + 1);
-    v25 = *((DWORD *)a1 + v24 + 2);
+    v25 = *((_DWORD *)rc4_key + v24 + 2);
     v26 = (unsigned __int8)(v25 + v22);
-    v27 = *((DWORD *)a1 + v26 + 2);
-    *((DWORD *)a1 + v24 + 2) = v27;
-    *((DWORD *)a1 + v26 + 2) = v25;
-    a4[4] = a3[4] ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v25 + v27) + 8);
+    v27 = *((_DWORD *)rc4_key + v26 + 2);
+    *((_DWORD *)rc4_key + v24 + 2) = v27;
+    *((_DWORD *)rc4_key + v26 + 2) = v25;
+    buf_[4] = buf[4] ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v25 + v27) + 8);
     v28 = (unsigned __int8)(v24 + 1);
-    v29 = *((DWORD *)a1 + v28 + 2);
+    v29 = *((_DWORD *)rc4_key + v28 + 2);
     v30 = (unsigned __int8)(v29 + v26);
-    v31 = *((DWORD *)a1 + v30 + 2);
-    *((DWORD *)a1 + v28 + 2) = v31;
-    *((DWORD *)a1 + v30 + 2) = v29;
-    a4[5] = a3[5] ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v29 + v31) + 8);
+    v31 = *((_DWORD *)rc4_key + v30 + 2);
+    *((_DWORD *)rc4_key + v28 + 2) = v31;
+    *((_DWORD *)rc4_key + v30 + 2) = v29;
+    buf_[5] = buf[5] ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v29 + v31) + 8);
     v32 = (unsigned __int8)(v28 + 1);
-    v33 = *((DWORD *)a1 + v32 + 2);
+    v33 = *((_DWORD *)rc4_key + v32 + 2);
     v34 = (unsigned __int8)(v33 + v30);
-    v35 = *((DWORD *)a1 + v34 + 2);
-    *((DWORD *)a1 + v32 + 2) = v35;
-    *((DWORD *)a1 + v34 + 2) = v33;
-    a4[6] = a3[6] ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v33 + v35) + 8);
+    v35 = *((_DWORD *)rc4_key + v34 + 2);
+    *((_DWORD *)rc4_key + v32 + 2) = v35;
+    *((_DWORD *)rc4_key + v34 + 2) = v33;
+    buf_[6] = buf[6] ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v33 + v35) + 8);
     v7 = (unsigned __int8)(v32 + 1);
-    v36 = *((DWORD *)a1 + v7 + 2);
+    v36 = *((_DWORD *)rc4_key + v7 + 2);
     v6 = (unsigned __int8)(v36 + v34);
-    v37 = *((DWORD *)a1 + v6 + 2);
-    *((DWORD *)a1 + v7 + 2) = v37;
-    *((DWORD *)a1 + v6 + 2) = v36;
-    a4[7] = a3[7] ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v36 + v37) + 8);
-    v38 = a4 + 8;
-    v39 = a3 + 8;
-    if ( v102 != (struct rc4_key_st *)&unk_1 )
+    v37 = *((_DWORD *)rc4_key + v6 + 2);
+    *((_DWORD *)rc4_key + v7 + 2) = v37;
+    *((_DWORD *)rc4_key + v6 + 2) = v36;
+    buf_[7] = buf[7] ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v36 + v37) + 8);
+    v38 = buf_ + 8;
+    v39 = buf + 8;
+    if ( rc4_keya != (struct rc4_key_st *)&pbPubKey[1] )
     {
-      v111 = (unsigned __int8 *)v102 - 1;
+      buf_a = (unsigned __int8 *)rc4_keya - 1;
       do
       {
         v40 = (unsigned __int8)(v7 + 1);
-        v41 = *((DWORD *)a1 + v40 + 2);
+        v41 = *((_DWORD *)rc4_key + v40 + 2);
         v42 = (unsigned __int8)(v41 + v6);
-        v43 = *((DWORD *)a1 + v42 + 2);
-        *((DWORD *)a1 + v40 + 2) = v43;
-        *((DWORD *)a1 + v42 + 2) = v41;
-        *v38 = *v39 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v41 + v43) + 8);
+        v43 = *((_DWORD *)rc4_key + v42 + 2);
+        *((_DWORD *)rc4_key + v40 + 2) = v43;
+        *((_DWORD *)rc4_key + v42 + 2) = v41;
+        *v38 = *v39 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v41 + v43) + 8);
         v44 = v38 + 1;
         v45 = v39 + 1;
         v46 = (unsigned __int8)(v40 + 1);
-        v47 = *((DWORD *)a1 + v46 + 2);
+        v47 = *((_DWORD *)rc4_key + v46 + 2);
         v48 = (unsigned __int8)(v47 + v42);
-        v49 = *((DWORD *)a1 + v48 + 2);
-        *((DWORD *)a1 + v46 + 2) = v49;
-        *((DWORD *)a1 + v48 + 2) = v47;
-        *v44++ = *v45++ ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v47 + v49) + 8);
+        v49 = *((_DWORD *)rc4_key + v48 + 2);
+        *((_DWORD *)rc4_key + v46 + 2) = v49;
+        *((_DWORD *)rc4_key + v48 + 2) = v47;
+        *v44++ = *v45++ ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v47 + v49) + 8);
         v50 = (unsigned __int8)(v46 + 1);
-        v51 = *((DWORD *)a1 + v50 + 2);
+        v51 = *((_DWORD *)rc4_key + v50 + 2);
         v52 = (unsigned __int8)(v51 + v48);
-        v53 = *((DWORD *)a1 + v52 + 2);
-        *((DWORD *)a1 + v50 + 2) = v53;
-        *((DWORD *)a1 + v52 + 2) = v51;
-        *v44++ = *v45++ ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v51 + v53) + 8);
+        v53 = *((_DWORD *)rc4_key + v52 + 2);
+        *((_DWORD *)rc4_key + v50 + 2) = v53;
+        *((_DWORD *)rc4_key + v52 + 2) = v51;
+        *v44++ = *v45++ ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v51 + v53) + 8);
         v54 = (unsigned __int8)(v50 + 1);
-        v55 = *((DWORD *)a1 + v54 + 2);
+        v55 = *((_DWORD *)rc4_key + v54 + 2);
         v56 = (unsigned __int8)(v55 + v52);
-        v57 = *((DWORD *)a1 + v56 + 2);
-        *((DWORD *)a1 + v54 + 2) = v57;
-        *((DWORD *)a1 + v56 + 2) = v55;
-        *v44++ = *v45++ ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v55 + v57) + 8);
+        v57 = *((_DWORD *)rc4_key + v56 + 2);
+        *((_DWORD *)rc4_key + v54 + 2) = v57;
+        *((_DWORD *)rc4_key + v56 + 2) = v55;
+        *v44++ = *v45++ ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v55 + v57) + 8);
         v58 = (unsigned __int8)(v54 + 1);
-        v59 = *((DWORD *)a1 + v58 + 2);
+        v59 = *((_DWORD *)rc4_key + v58 + 2);
         v60 = (unsigned __int8)(v59 + v56);
-        v61 = *((DWORD *)a1 + v60 + 2);
-        *((DWORD *)a1 + v58 + 2) = v61;
-        *((DWORD *)a1 + v60 + 2) = v59;
-        *v44++ = *v45++ ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v59 + v61) + 8);
+        v61 = *((_DWORD *)rc4_key + v60 + 2);
+        *((_DWORD *)rc4_key + v58 + 2) = v61;
+        *((_DWORD *)rc4_key + v60 + 2) = v59;
+        *v44++ = *v45++ ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v59 + v61) + 8);
         v62 = (unsigned __int8)(v58 + 1);
-        v63 = *((DWORD *)a1 + v62 + 2);
+        v63 = *((_DWORD *)rc4_key + v62 + 2);
         v64 = (unsigned __int8)(v63 + v60);
-        v65 = *((DWORD *)a1 + v64 + 2);
-        *((DWORD *)a1 + v62 + 2) = v65;
-        *((DWORD *)a1 + v64 + 2) = v63;
-        *v44++ = *v45++ ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v63 + v65) + 8);
+        v65 = *((_DWORD *)rc4_key + v64 + 2);
+        *((_DWORD *)rc4_key + v62 + 2) = v65;
+        *((_DWORD *)rc4_key + v64 + 2) = v63;
+        *v44++ = *v45++ ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v63 + v65) + 8);
         v66 = (unsigned __int8)(v62 + 1);
-        v67 = *((DWORD *)a1 + v66 + 2);
+        v67 = *((_DWORD *)rc4_key + v66 + 2);
         v68 = (unsigned __int8)(v67 + v64);
-        v69 = *((DWORD *)a1 + v68 + 2);
-        *((DWORD *)a1 + v66 + 2) = v69;
-        *((DWORD *)a1 + v68 + 2) = v67;
-        *v44++ = *v45++ ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v67 + v69) + 8);
+        v69 = *((_DWORD *)rc4_key + v68 + 2);
+        *((_DWORD *)rc4_key + v66 + 2) = v69;
+        *((_DWORD *)rc4_key + v68 + 2) = v67;
+        *v44++ = *v45++ ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v67 + v69) + 8);
         v7 = (unsigned __int8)(v66 + 1);
-        v70 = *((DWORD *)a1 + v7 + 2);
+        v70 = *((_DWORD *)rc4_key + v7 + 2);
         v6 = (unsigned __int8)(v70 + v68);
-        v71 = *((DWORD *)a1 + v6 + 2);
-        *((DWORD *)a1 + v7 + 2) = v71;
-        *((DWORD *)a1 + v6 + 2) = v70;
-        *v44 = *v45 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v70 + v71) + 8);
+        v71 = *((_DWORD *)rc4_key + v6 + 2);
+        *((_DWORD *)rc4_key + v7 + 2) = v71;
+        *((_DWORD *)rc4_key + v6 + 2) = v70;
+        *v44 = *v45 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v70 + v71) + 8);
         v38 = v44 + 1;
         v39 = v45 + 1;
-        --v111;
+        --buf_a;
       }
-      while ( v111 );
+      while ( buf_a );
     }
-    v4 = a2;
+    v4 = size;
   }
   else
   {
-    v38 = a4;
-    v39 = a3;
+    v38 = buf_;
+    v39 = buf;
   }
-  v103 = (struct rc4_key_st *)(v4 & 7);
+  rc4_keyb = (struct rc4_key_st *)(v4 & 7);
   if ( (v4 & 7) != 0 )
   {
     v7 = (unsigned __int8)(v7 + 1);
-    v72 = *((DWORD *)a1 + v7 + 2);
+    v72 = *((_DWORD *)rc4_key + v7 + 2);
     v6 = (unsigned __int8)(v72 + v6);
-    v73 = *((DWORD *)a1 + v6 + 2);
-    *((DWORD *)a1 + v7 + 2) = v73;
-    *((DWORD *)a1 + v6 + 2) = v72;
-    *v38 = *v39 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v72 + v73) + 8);
+    v73 = *((_DWORD *)rc4_key + v6 + 2);
+    *((_DWORD *)rc4_key + v7 + 2) = v73;
+    *((_DWORD *)rc4_key + v6 + 2) = v72;
+    *v38 = *v39 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v72 + v73) + 8);
     v74 = v38 + 1;
     v75 = v39 + 1;
-    for ( i = (struct rc4_key_st *)((char *)v103 - 1); i; i = (struct rc4_key_st *)((char *)v110 - 1) )
+    for ( rc4_keyc = (struct rc4_key_st *)((char *)rc4_keyb - 1);
+          rc4_keyc;
+          rc4_keyc = (struct rc4_key_st *)((char *)rc4_keyi - 1) )
     {
       v7 = (unsigned __int8)(v7 + 1);
-      v76 = *((DWORD *)a1 + v7 + 2);
+      v76 = *((_DWORD *)rc4_key + v7 + 2);
       v6 = (unsigned __int8)(v76 + v6);
-      v77 = *((DWORD *)a1 + v6 + 2);
-      *((DWORD *)a1 + v7 + 2) = v77;
-      *((DWORD *)a1 + v6 + 2) = v76;
-      *v74 = *v75 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v76 + v77) + 8);
+      v77 = *((_DWORD *)rc4_key + v6 + 2);
+      *((_DWORD *)rc4_key + v7 + 2) = v77;
+      *((_DWORD *)rc4_key + v6 + 2) = v76;
+      *v74 = *v75 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v76 + v77) + 8);
       v78 = v74 + 1;
       v79 = v75 + 1;
-      v105 = (struct rc4_key_st *)((char *)i - 1);
-      if ( !v105 )
+      rc4_keyd = (struct rc4_key_st *)((char *)rc4_keyc - 1);
+      if ( !rc4_keyd )
         break;
       v7 = (unsigned __int8)(v7 + 1);
-      v80 = *((DWORD *)a1 + v7 + 2);
+      v80 = *((_DWORD *)rc4_key + v7 + 2);
       v6 = (unsigned __int8)(v80 + v6);
-      v81 = *((DWORD *)a1 + v6 + 2);
-      *((DWORD *)a1 + v7 + 2) = v81;
-      *((DWORD *)a1 + v6 + 2) = v80;
-      *v78 = *v79 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v80 + v81) + 8);
+      v81 = *((_DWORD *)rc4_key + v6 + 2);
+      *((_DWORD *)rc4_key + v7 + 2) = v81;
+      *((_DWORD *)rc4_key + v6 + 2) = v80;
+      *v78 = *v79 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v80 + v81) + 8);
       v82 = v78 + 1;
       v83 = v79 + 1;
-      v106 = (struct rc4_key_st *)((char *)v105 - 1);
-      if ( !v106 )
+      rc4_keye = (struct rc4_key_st *)((char *)rc4_keyd - 1);
+      if ( !rc4_keye )
         break;
       v7 = (unsigned __int8)(v7 + 1);
-      v84 = *((DWORD *)a1 + v7 + 2);
+      v84 = *((_DWORD *)rc4_key + v7 + 2);
       v6 = (unsigned __int8)(v84 + v6);
-      v85 = *((DWORD *)a1 + v6 + 2);
-      *((DWORD *)a1 + v7 + 2) = v85;
-      *((DWORD *)a1 + v6 + 2) = v84;
-      *v82 = *v83 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v84 + v85) + 8);
+      v85 = *((_DWORD *)rc4_key + v6 + 2);
+      *((_DWORD *)rc4_key + v7 + 2) = v85;
+      *((_DWORD *)rc4_key + v6 + 2) = v84;
+      *v82 = *v83 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v84 + v85) + 8);
       v86 = v82 + 1;
       v87 = v83 + 1;
-      v107 = (struct rc4_key_st *)((char *)v106 - 1);
-      if ( !v107 )
+      rc4_keyf = (struct rc4_key_st *)((char *)rc4_keye - 1);
+      if ( !rc4_keyf )
         break;
       v7 = (unsigned __int8)(v7 + 1);
-      v88 = *((DWORD *)a1 + v7 + 2);
+      v88 = *((_DWORD *)rc4_key + v7 + 2);
       v6 = (unsigned __int8)(v88 + v6);
-      v89 = *((DWORD *)a1 + v6 + 2);
-      *((DWORD *)a1 + v7 + 2) = v89;
-      *((DWORD *)a1 + v6 + 2) = v88;
-      *v86 = *v87 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v88 + v89) + 8);
+      v89 = *((_DWORD *)rc4_key + v6 + 2);
+      *((_DWORD *)rc4_key + v7 + 2) = v89;
+      *((_DWORD *)rc4_key + v6 + 2) = v88;
+      *v86 = *v87 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v88 + v89) + 8);
       v90 = v86 + 1;
       v91 = v87 + 1;
-      v108 = (struct rc4_key_st *)((char *)v107 - 1);
-      if ( !v108 )
+      rc4_keyg = (struct rc4_key_st *)((char *)rc4_keyf - 1);
+      if ( !rc4_keyg )
         break;
       v7 = (unsigned __int8)(v7 + 1);
-      v92 = *((DWORD *)a1 + v7 + 2);
+      v92 = *((_DWORD *)rc4_key + v7 + 2);
       v6 = (unsigned __int8)(v92 + v6);
-      v93 = *((DWORD *)a1 + v6 + 2);
-      *((DWORD *)a1 + v7 + 2) = v93;
-      *((DWORD *)a1 + v6 + 2) = v92;
-      *v90 = *v91 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v92 + v93) + 8);
+      v93 = *((_DWORD *)rc4_key + v6 + 2);
+      *((_DWORD *)rc4_key + v7 + 2) = v93;
+      *((_DWORD *)rc4_key + v6 + 2) = v92;
+      *v90 = *v91 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v92 + v93) + 8);
       v94 = v90 + 1;
       v95 = v91 + 1;
-      v109 = (struct rc4_key_st *)((char *)v108 - 1);
-      if ( !v109 )
+      rc4_keyh = (struct rc4_key_st *)((char *)rc4_keyg - 1);
+      if ( !rc4_keyh )
         break;
       v7 = (unsigned __int8)(v7 + 1);
-      v96 = *((DWORD *)a1 + v7 + 2);
+      v96 = *((_DWORD *)rc4_key + v7 + 2);
       v6 = (unsigned __int8)(v96 + v6);
-      v97 = *((DWORD *)a1 + v6 + 2);
-      *((DWORD *)a1 + v7 + 2) = v97;
-      *((DWORD *)a1 + v6 + 2) = v96;
-      *v94 = *v95 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v96 + v97) + 8);
+      v97 = *((_DWORD *)rc4_key + v6 + 2);
+      *((_DWORD *)rc4_key + v7 + 2) = v97;
+      *((_DWORD *)rc4_key + v6 + 2) = v96;
+      *v94 = *v95 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v96 + v97) + 8);
       v98 = v94 + 1;
       v99 = v95 + 1;
-      v110 = (struct rc4_key_st *)((char *)v109 - 1);
-      if ( !v110 )
+      rc4_keyi = (struct rc4_key_st *)((char *)rc4_keyh - 1);
+      if ( !rc4_keyi )
         break;
       v7 = (unsigned __int8)(v7 + 1);
-      v100 = *((DWORD *)a1 + v7 + 2);
+      v100 = *((_DWORD *)rc4_key + v7 + 2);
       v6 = (unsigned __int8)(v100 + v6);
-      v101 = *((DWORD *)a1 + v6 + 2);
-      *((DWORD *)a1 + v7 + 2) = v101;
-      *((DWORD *)a1 + v6 + 2) = v100;
-      *v98 = *v99 ^ *((BYTE *)a1 + 4 * (unsigned __int8)(v100 + v101) + 8);
+      v101 = *((_DWORD *)rc4_key + v6 + 2);
+      *((_DWORD *)rc4_key + v7 + 2) = v101;
+      *((_DWORD *)rc4_key + v6 + 2) = v100;
+      *v98 = *v99 ^ *((_BYTE *)rc4_key + 4 * (unsigned __int8)(v100 + v101) + 8);
       v74 = v98 + 1;
       v75 = v99 + 1;
     }
   }
-  *(DWORD *)a1 = v7;
-  *((DWORD *)a1 + 1) = v6;
+  *(_DWORD *)rc4_key = v7;
+  *((_DWORD *)rc4_key + 1) = v6;
 }
 
 //----- (00001214) --------------------------------------------------------
