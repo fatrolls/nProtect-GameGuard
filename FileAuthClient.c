@@ -620,7 +620,7 @@ char __thiscall CFileAuthClient::DecryptMem(CFileAuthClient *this, LPCSTR lpFile
     CryptDestroyKey(*((_DWORD *)this + 15));
     *v17 = 0;
   }
-  if ( !CryptDeriveKey(*(_DWORD *)this, 0x6801u, *v16, 0, (HCRYPTKEY *)this + 15) )
+  if ( !CryptDeriveKey(*(_DWORD *)this, CALG_RC4, *v16, 0, (HCRYPTKEY *)this + 15) )
   {
     *((_DWORD *)this + 17) = 7;
     return 0;
