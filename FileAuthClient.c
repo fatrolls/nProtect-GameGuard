@@ -263,7 +263,7 @@ char __thiscall CFileAuthClient::Auth(HCRYPTPROV *phProv, LPCSTR lpFileNameToRea
   v17 = CryptImportKey;
   if ( !CryptImportKey(*phProv, &pbPubKey, dwPubKeyLen, 0, 0, phProv + 4) )
   {
-    if ( GetLastError() != 87 )
+    if ( GetLastError() != ERROR_INVALID_PARAMETER )
       goto LABEL_37;
     if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) )
     {
@@ -295,7 +295,7 @@ LABEL_37:
   }
   if ( CryptVerifySignatureA(*v18, (const BYTE *)phProv[5], phProv[6], *v16, 0, 0) )
     goto LABEL_61;
-  if ( GetLastError() != 87 )
+  if ( GetLastError() != ERROR_INVALID_PARAMETER )
     goto LABEL_49;
   if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) )
   {
