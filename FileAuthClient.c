@@ -520,7 +520,7 @@ char __thiscall CFileAuthClient::DecryptMem(CFileAuthClient *this, LPCSTR lpFile
   char *v20; // edx
   DWORD NumberOfBytesRead; // [esp+10h] [ebp-4h] BYREF
 
-  v6 = CreateFileA(lpFileName, 0x80000000, 3u, 0, 3u, 0x80u, 0);
+  v6 = CreateFileA(lpFileName, GENERIC_READ, 3u, 0, 3u, 0x80u, 0);
   v7 = v6;
   if ( v6 == (HANDLE)-1 )
   {
