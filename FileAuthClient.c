@@ -90,7 +90,7 @@ HCRYPTPROV *__thiscall CFileAuthClient::CFileAuthClient(HCRYPTPROV *phProv)
   phProv[8] = 0;
   phProv[17] = 0;
   phProv[4] = 0;
-  if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, CRYPT_VERIFYCONTEXT) )
+  if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) )
     *phProv = 0;
   return phProv;
 }
@@ -249,7 +249,7 @@ char __thiscall CFileAuthClient::Auth(HCRYPTPROV *phProv, LPCSTR lpFileNameToRea
     return 0;
   }
   qmemcpy(v15, (const void *)(phProv[14] + phProv[1] + phProv[2]), phProv[6]);
-  if ( !*phProv && !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, CRYPT_VERIFYCONTEXT) )
+  if ( !*phProv && !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) )
   {
     phProv[17] = 8;
     return 0;
@@ -265,7 +265,7 @@ char __thiscall CFileAuthClient::Auth(HCRYPTPROV *phProv, LPCSTR lpFileNameToRea
   {
     if ( GetLastError() != 87 )
       goto LABEL_37;
-    if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, CRYPT_VERIFYCONTEXT) )
+    if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) )
     {
       phProv[17] = 98;
       return 0;
@@ -297,7 +297,7 @@ LABEL_37:
     goto LABEL_61;
   if ( GetLastError() != 87 )
     goto LABEL_49;
-  if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, CRYPT_VERIFYCONTEXT) )
+  if ( !CryptAcquireContextA(phProv, 0, "Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) )
   {
     phProv[17] = 128;
     return 0;
@@ -427,7 +427,7 @@ char __thiscall CFileAuthClient::Decrypt(CFileAuthClient *this, LPCSTR lpFileNam
           (HCRYPTPROV *)this,
           0,
           "Microsoft Base Cryptographic Provider v1.0",
-          1u,
+          PROV_RSA_FULL,
           CRYPT_VERIFYCONTEXT) )
   {
     *((_DWORD *)this + 17) = 4;
@@ -593,7 +593,7 @@ char __thiscall CFileAuthClient::DecryptMem(CFileAuthClient *this, LPCSTR lpFile
   }
   CloseHandle(v7);
   if ( !*(_DWORD *)this
-    && !CryptAcquireContextA((HCRYPTPROV *)this, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, CRYPT_VERIFYCONTEXT) )
+    && !CryptAcquireContextA((HCRYPTPROV *)this, 0, "Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) )
   {
     *((_DWORD *)this + 17) = 4;
     return 0;
