@@ -58,7 +58,7 @@ public:
     CFileAuthClient();
     ~CFileAuthClient();
     BOOL Auth(LPCSTR lpFileNameToRead, bool a3);
-    BOOL Decrypt(LPCSTR lpFileNameRead, LPCSTR outputfileNameToCreate, BYTE* pbData);
+    BOOL Decrypt(LPCSTR lpFileNameRead, LPCSTR outputfileNameToCreate, BYTE* pbData, DWORD PubKeyLen);
     BOOL DecryptMem(LPCSTR lpFileName, char* dstArray, unsigned int dstSize, BYTE* pbData);
     BOOL DecryptRC4(unsigned __int8* buf, unsigned int size);
 };
@@ -92,7 +92,7 @@ void __cdecl RC4(struct rc4_key_st*, unsigned int, unsigned __int8*, unsigned __
 //-------------------------------------------------------------------------
 // Data declarations
 
-BYTE pbPubKey[84] =
+BYTE pbPubKey[] =
 {
   6u,
   2u,
@@ -182,6 +182,47 @@ BYTE pbPubKey[84] =
 
 DWORD dwPubKeyLen = 84u; // idb
 
+//dwPubKeyLen = 84 too.
+BYTE KEY2[] = {
+    0x06, 0x02, 0x00, 0x00, 0x00, 0xa4, 0x00, 0x00, 0x52, 0x53, 0x41, 0x31,
+    0x00, 0x02, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x91, 0xc8, 0xb0, 0x9a,
+    0x2c, 0x39, 0xd2, 0x73, 0x5e, 0x8f, 0x6f, 0x15, 0x2a, 0xe7, 0x4f, 0xbd,
+    0x66, 0xff, 0x4e, 0x8d, 0x8c, 0xb3, 0xc0, 0x8d, 0x98, 0xf4, 0xb2, 0xdc,
+    0x81, 0x43, 0x51, 0xbc, 0xf3, 0xd6, 0x74, 0x50, 0x7f, 0x39, 0x87, 0xa8,
+    0x1b, 0x5c, 0x06, 0x36, 0x47, 0x08, 0xa8, 0xd8, 0x63, 0xad, 0xfd, 0x6d,
+    0xb5, 0xa4, 0x94, 0xf0, 0xe0, 0xdf, 0xea, 0xc5, 0xf4, 0x73, 0xdc, 0xd2
+};
+DWORD dwPubKeyLen_Key2 = 84;
+
+//dwPubKeyLen = 276
+BYTE KEY3[] = {
+    0x06, 0x02, 0x00, 0x00, 0x00, 0x24, 0x00, 0x00, 0x52, 0x53, 0x41, 0x31,
+    0x00, 0x08, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x11, 0x1c, 0x30, 0x49,
+    0x7a, 0x1d, 0x09, 0xfa, 0x1c, 0xb0, 0x45, 0x9d, 0xee, 0x2d, 0xc8, 0x00,
+    0xd1, 0x90, 0xfb, 0x1c, 0x1a, 0xa8, 0x00, 0x81, 0x13, 0x15, 0xa5, 0xa8,
+    0x7d, 0x30, 0xfb, 0x7f, 0x47, 0xf0, 0x83, 0x01, 0xe7, 0xc1, 0x45, 0xb2,
+    0xfa, 0x98, 0x01, 0x3f, 0xea, 0x04, 0xb9, 0xd3, 0xc5, 0x24, 0x93, 0xa3,
+    0x7e, 0x90, 0x31, 0xa6, 0xec, 0x87, 0xec, 0x2b, 0x2a, 0xab, 0x95, 0xa5,
+    0x3e, 0xbd, 0x99, 0xc2, 0x0c, 0x6e, 0x4e, 0x08, 0x40, 0xa6, 0xd6, 0x73,
+    0x64, 0xad, 0xb6, 0x32, 0x99, 0x64, 0x2a, 0xf2, 0x24, 0xa5, 0x21, 0xd8,
+    0x63, 0xe1, 0xbe, 0xcd, 0xcd, 0x66, 0x4c, 0xe5, 0x6a, 0x4d, 0xd1, 0xd1,
+    0x44, 0xb0, 0x5d, 0xd3, 0xd6, 0x94, 0xac, 0x29, 0x66, 0x25, 0x24, 0x19,
+    0xef, 0x12, 0x88, 0xad, 0x74, 0xd6, 0x42, 0xb6, 0x93, 0x9b, 0x82, 0xbd,
+    0x01, 0x32, 0x6b, 0x5b, 0xb5, 0xbf, 0xfd, 0x04, 0x00, 0xba, 0x52, 0xf8,
+    0x59, 0x9a, 0xd9, 0x7d, 0xaa, 0xb9, 0xd2, 0x74, 0x12, 0x94, 0x06, 0x9b,
+    0x4e, 0xdb, 0x3b, 0x97, 0x25, 0x01, 0x1a, 0xe5, 0xf8, 0x4b, 0xe4, 0xe0,
+    0xae, 0xae, 0xfe, 0x2a, 0x24, 0x9e, 0x46, 0xbd, 0xc3, 0xc5, 0xa2, 0x67,
+    0x5d, 0x89, 0x9f, 0xa5, 0xeb, 0x60, 0x1e, 0xb6, 0x41, 0x88, 0xb0, 0x95,
+    0xa1, 0x45, 0xc4, 0x5e, 0xa1, 0x3f, 0xc2, 0xed, 0x18, 0xf1, 0x64, 0xdd,
+    0x4c, 0xea, 0x17, 0xe3, 0x3a, 0x26, 0x32, 0x01, 0xe3, 0xe3, 0xba, 0x4c,
+    0xb5, 0x82, 0x19, 0x93, 0xff, 0x53, 0x7c, 0x03, 0x6c, 0xc5, 0x04, 0x8a,
+    0x9c, 0x01, 0xfc, 0x83, 0x58, 0x28, 0x1f, 0xa5, 0xc1, 0x63, 0x96, 0x75,
+    0x84, 0xf3, 0xdd, 0xab, 0x86, 0xbb, 0xff, 0xcf, 0xce, 0x62, 0x85, 0x9c, 
+    0xd1, 0x07, 0xd1, 0x5a, 0xf8, 0x07, 0xc4, 0x64, 0x8f, 0x20, 0xce, 0xc2
+};
+DWORD dwPubKeyLen_Key3 = 276;
+
+DWORD WhichKeyUsed = 0;
 
 //----- (00000058) --------------------------------------------------------
 CFileAuthClient::CFileAuthClient()
@@ -433,7 +474,7 @@ BOOL CFileAuthClient::Auth(LPCSTR lpFileNameToRead, bool a3)
 }
 
 //----- (00000554) --------------------------------------------------------
-BOOL CFileAuthClient::Decrypt(LPCSTR lpFileNameRead, LPCSTR outputfileNameToCreate, BYTE* pbData)
+BOOL CFileAuthClient::Decrypt(LPCSTR lpFileNameRead, LPCSTR outputfileNameToCreate, BYTE* pbData, DWORD PubKeyLen = 0)
 {
     HANDLE v5; // eax
     void* v6; // edi
@@ -552,10 +593,19 @@ BOOL CFileAuthClient::Decrypt(LPCSTR lpFileNameRead, LPCSTR outputfileNameToCrea
         return 0;
     }
 
-    if (!CryptHashData(hHash, pbData, strlen((const char*)pbData), 0))
-    {
-        retValue = 6;
-        return 0;
+    if (PubKeyLen == 0) {
+
+        if (!CryptHashData(hHash, pbData, strlen((const char*)pbData), 0))
+        {
+            retValue = 6;
+            return 0;
+        }
+    } else {
+        if (!CryptHashData(hHash, pbData, PubKeyLen, 0))
+        {
+            retValue = 6;
+            return 0;
+        }
     }
 
     if (hKey)
@@ -1337,8 +1387,8 @@ int main()
 {
     CFileAuthClient * test = new CFileAuthClient();
 
-    test->Auth("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini", 1);
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini.dump.txt", (BYTE*)"ectGameMon");
+    test->Auth("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini", 1);
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\AtlanticaNA.ini.dump.txt", (BYTE*)"ectGameMon");
 
     /*
     Keys dd \xC5\xF1\xF4\x35
@@ -1353,19 +1403,27 @@ int main()
             \x1A\x0A\x12\x18
     */
 
-    DecryptERLFiles("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\output.test.txt");
+    //DecryptERLFiles("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\output.test.txt");
 
-    test->Auth("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", 1);
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.1.dump.txt", (BYTE*)"\xC5\xF1\xF4\x35");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.2.dump.txt", (BYTE*)"\x83\xA3\xA0\x23");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.3.dump.txt", (BYTE*)"\x4E\x62\x6C\x2E");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.4.dump.txt", (BYTE*)"\x89\x81\x88\x09");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.5.dump.txt", (BYTE*)"\xCA\xF2\xF8\x3A");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.6.dump.txt", (BYTE*)"\xD2\xD4\x16\xC6");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.7.dump.txt", (BYTE*)"\x9C\x1D\x8D\x91");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.8.dump.txt", (BYTE*)"\x64\x26\x46\x62");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.9.dump.txt", (BYTE*)"\x39\x49\x71\x78");
-    test->Decrypt("C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.10.dump.txt", (BYTE*)"\x1A\x0A\x12\x18");
+    test->Auth("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", 1);
+    /*
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.1.dump.txt", (BYTE*)"\xC5\xF1\xF4\x35");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.2.dump.txt", (BYTE*)"\x83\xA3\xA0\x23");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.3.dump.txt", (BYTE*)"\x4E\x62\x6C\x2E");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.4.dump.txt", (BYTE*)"\x89\x81\x88\x09");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.5.dump.txt", (BYTE*)"\xCA\xF2\xF8\x3A");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.6.dump.txt", (BYTE*)"\xD2\xD4\x16\xC6");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.7.dump.txt", (BYTE*)"\x9C\x1D\x8D\x91");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.8.dump.txt", (BYTE*)"\x64\x26\x46\x62");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.9.dump.txt", (BYTE*)"\x39\x49\x71\x78");
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.10.dump.txt", (BYTE*)"\x1A\x0A\x12\x18");
+    */
+
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.new1.dump.txt", KEY2, dwPubKeyLen_Key2);
+
+
+    test->Decrypt("C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl", "C:\\Users\\User\\Desktop\\Atlantica\\gguardfile\\ErlDecoder\\Debug\\0npgg.erl.new2.dump.txt", KEY3, dwPubKeyLen_Key3);
+
 
     
     std::cout << "Hello World!\n";
